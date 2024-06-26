@@ -24,7 +24,8 @@ const QuestionSchema = new mongoose.Schema(
         },
         rating: 
         { 
-            type: Number 
+            type: Number,
+            default: 0
         }
     },
     {

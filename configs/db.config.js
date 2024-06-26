@@ -1,10 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import path from 'path';
-import { generateLogs } from "../utils/logger.js";
 dotenv.config({ path: './.env' });
-let filePath = new URL(import.meta.url).pathname;
-let fileName = path.basename(filePath); 
 
 // The below function is for creating the database connection
 const createDbConnection = async () => {
@@ -13,17 +10,15 @@ const createDbConnection = async () => {
         const dbConnection = await mongoose.connect(process.env.DB_URL);
         if (dbConnection) {
             let message = "Successfully connected to the database"
-            // // generateLogs("", true, null, message , "DBConnection", "DBConnectionSuccess", filePath, fileName);
             console.log(message);
-            init();
         } else {
             let message = "Failed to connect to the database"
-            // generateLogs("", false, null, message, "DBConnection", "DBConnectionError", filePath, fileName);
             console.log(message);
         }
     } 
     catch (error) 
     {
+        console.log(error.message)
         // generateLogs("", false, null, `Error: ${error.message}`, "DBConnection", "DBConnectionError", filePath, fileName, 500);
     }
 }

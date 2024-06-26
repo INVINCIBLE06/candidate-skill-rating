@@ -75,3 +75,29 @@ export const deleteUser = async (req, res, next) => {
         });
     }
 };
+
+// Get Single User by ID
+export const getParticularUser = async (req, res, next) => {
+    try 
+    {
+        await createDbConnection();
+        const user = await User.findById(req.params.id);
+        await closeDbConnection();
+        if (!user) {
+            return res.status(404).json({
+                status: false,
+                message: "User not found"
+            });
+        }
+        return res.status(200).json({
+            status: true,
+            message: "User fetched successfully",
+            data: user
+        });
+    } catch (err) {
+        return res.status(400).json({
+            status: false,
+            error: err.message
+        });
+    }
+};
