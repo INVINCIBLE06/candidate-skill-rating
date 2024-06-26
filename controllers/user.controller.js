@@ -1,3 +1,10 @@
+//////////////////////////////////////////////////////////////
+//                                                          //
+//      This is a controller file for user collection       //
+//      which will be responsible for all the operations    //
+//                                                          //
+//////////////////////////////////////////////////////////////
+
 import { closeDbConnection, createDbConnection } from '../configs/db.config.js';
 import User from '../models/user.model.js';
 import bcrypt from 'bcryptjs';

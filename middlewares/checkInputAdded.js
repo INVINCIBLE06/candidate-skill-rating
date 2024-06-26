@@ -1,6 +1,7 @@
 import { checkValueEntered } from "../utils/helper.js";
-import User from '../models/user.model.js';
 import { closeDbConnection, createDbConnection } from "../configs/db.config.js";
+import User from '../models/user.model.js';
+
 
 // Below function will check the create user body
 export async function checkCreateUserBody(req, res, next) {
@@ -120,5 +121,31 @@ export async function emailValidation(req, res, next) {
                 });
             }
         }
+    }
+}
+
+// The below function is for checking the submit rating body
+export async function submitRatingBody(req, res, next) {
+    try
+    {
+        const { rating } = req.body
+        await checkValueEntered(rating, `Rating`)(req, res, next);
+        if (rating < 0) {
+            return res.status(500).json({
+                status: false,
+                error: 'Rating can not be less than 0.'
+            });
+        } else if (rating > 5) {
+            return res.status(500).json({
+                status: false,
+                error: 'Rating can not be greater than 5.'
+            });
+        } else {
+            next();
+        }
+    } 
+    catch (error) 
+    {
+        console.log(`Error from submitRatingBody`, error.message);
     }
 }

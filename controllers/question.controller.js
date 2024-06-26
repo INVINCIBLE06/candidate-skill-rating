@@ -1,24 +1,17 @@
+//////////////////////////////////////////////////////////////
+//                                                          //
+//      This is a controller file for question collection   //
+//      which will be responsible for all the operations    //
+//                                                          //
+//////////////////////////////////////////////////////////////
+
 import { closeDbConnection, createDbConnection } from '../configs/db.config.js';
 import Question from '../models/question.model.js';
-
-// Create or Update Question Response and Rating
-export const createOrUpdateResponse = async (req, res, next) => {
-    try {
-        const { skillId, difficulty_level, question, response, rating } = req.body;
-        let questionDoc = await Question.findOneAndUpdate(
-            { skillId, question },
-            { response, rating, difficulty_level },
-            { new: true, upsert: true }
-        );
-        res.status(201).json(questionDoc);
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
-};
 
 // Get Aggregate Skills and Ratings
 export const getAggregateRatings = async (req, res, next) => {
     try {
+        await createDbConnection();
         const questions = await Question.aggregate([
             {
                 $group: {
@@ -56,18 +49,23 @@ export const getAggregateRatings = async (req, res, next) => {
                 }
             }
         ]);
-        res.status(200).json(questions);
+        await closeDbConnection();
+        return res.status(200).json({
+            status: true,
+            data: questions
+        });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        return res.status(400).json({
+            status: false,
+            error: err.message
+        });
     }
 };
 
-
-
-
-export const candidateReponse = async (req, res, next) => {
+// The below function is for adding or updating candidate response    
+export const createOrUpdateResponse = async (req, res, next) => {
     if (req.user.role !== 'candidate') {
-        return res.status(403).json({ message: 'Access denied' });
+        return res.status(403).json({ message: 'Only candidate can give the response' });
     }
     const { skillId, difficulty_level, question, response } = req.body;
     try {
@@ -88,16 +86,15 @@ export const candidateReponse = async (req, res, next) => {
             error: err.message
         });
     }
-
 }
 
-// The below will give all the question of a particular
+// The below function will give all the question and answer of a particular user
 export const getParticularUserAllResponse = async (req, res, next) => {
     const userId = req.params.id;
     if (req.user.id !== userId) {
         return res.status(403).json({
             status: false,
-            message: 'Access denied'
+            message: 'Token is of a different user.'
         });
     }
     try {
@@ -116,7 +113,8 @@ export const getParticularUserAllResponse = async (req, res, next) => {
     }
 };
 
-export const submitRating = async (req, res) => {
+// The below function will be used for adding or updating the rating of a particular questions.
+export const submitRating = async (req, res, next) => {
     const _id  = req.params.id;
     const { rating } = req.body;
     if (req.user.role !== 'reviewer') {
@@ -137,4 +135,3 @@ export const submitRating = async (req, res) => {
         });
     }
 };
-

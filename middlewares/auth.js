@@ -1,3 +1,10 @@
+
+//////////////////////////////////////////////////////////////
+//                                                          //
+//      This is file is reponsible for verifying the token  //
+//                                                          //
+//////////////////////////////////////////////////////////////
+
 import jwt from 'jsonwebtoken';
 
 export const auth = (req, res, next) => {

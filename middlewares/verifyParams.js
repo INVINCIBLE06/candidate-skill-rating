@@ -1,8 +1,7 @@
 
-import mongoose from "mongoose";
-import { closeDbConnection, createDbConnection } from "../configs/db.config.js";
 import User from "../models/user.model.js";
 import Question from "../models/question.model.js";
+import { closeDbConnection, createDbConnection } from "../configs/db.config.js";
 
 const isValidUserIdInTheParams = (collection) => async (req, res, next) => 
 {

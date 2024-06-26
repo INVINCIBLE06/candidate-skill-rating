@@ -1,6 +1,12 @@
+
+///////////////////////////////////////////////////////////
+//                                                       //
+//      This file is for making the database connection. //
+//                                                       //
+///////////////////////////////////////////////////////////
+
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import path from 'path';
 dotenv.config({ path: './.env' });
 
 // The below function is for creating the database connection

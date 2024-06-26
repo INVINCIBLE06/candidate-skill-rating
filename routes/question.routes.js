@@ -1,15 +1,23 @@
 
 import express from 'express';
-import { candidateReponse, createOrUpdateResponse, getAggregateRatings, getParticularUserAllResponse, submitRating } from '../controllers/question.controller.js';
+import { createOrUpdateResponse, getAggregateRatings, getParticularUserAllResponse, submitRating } from '../controllers/question.controller.js';
 import { auth } from '../middlewares/auth.js';
 import isValidUserIdInTheParams from '../middlewares/verifyParams.js';
+import { submitRatingBody } from '../middlewares/checkInputAdded.js';
 
 const router = express.Router();
 
-// router.post('/questions', auth, createOrUpdateResponse);
-router.post('/questionsresponse', auth, candidateReponse);
+// The below function 
+router.get('/questions/aggregate',  auth, getAggregateRatings)
+
+// The below route is for adding candidate response
+router.post('/questions/response', auth, createOrUpdateResponse);
+
+// The below route is for get all the response of a particular user.
 router.get('/questions/getAllResponseOfParticularUser/:id', auth, isValidUserIdInTheParams("Candidate"), getParticularUserAllResponse);
-router.put('/questions/submitRating/:id', auth, isValidUserIdInTheParams("Question"), submitRating);
+
+// The below route is for submitting rating by the reviewsS
+router.put('/questions/submitRating/:id', auth, isValidUserIdInTheParams("Question"), submitRatingBody, submitRating);
 
 
 export default router;

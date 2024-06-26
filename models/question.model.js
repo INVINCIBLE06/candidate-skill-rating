@@ -1,3 +1,9 @@
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                          //
+//      This is a question model file. Which consist of the collection schema of the question collection    //
+//                                                                                                          //
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 import mongoose, { Schema } from 'mongoose';
 
 const QuestionSchema = new mongoose.Schema(
