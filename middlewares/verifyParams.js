@@ -2,29 +2,38 @@
 import mongoose from "mongoose";
 import { closeDbConnection, createDbConnection } from "../configs/db.config.js";
 import User from "../models/user.model.js";
+import Question from "../models/question.model.js";
 
-const isValidUserIdInTheParams = async (req, res, next) => 
+const isValidUserIdInTheParams = (collection) => async (req, res, next) => 
 {
     try 
     {
-        if (!req.params?.id) 
+        if (!req.params.id) 
         {
             return res.status(400).json({
                 code: 400,
-                status: false,
-                message: `${cName} id is required`
+                message: `user id is required`
             });
         } 
         else 
         {
+            let data;
+            let errorMessage;
             await createDbConnection();
-            const data = await User.findOne({ _id: req.params?.id });
+            if(collection === "Candidate") {
+                data = await Question.findOne({ candidate: req.params?.id });
+            } else if (collection === "Question") {
+                data = await Question.findOne({ _id: req.params?.id });
+                errorMessage = "Question not found with the provided params id"
+            } else {
+                data = await User.findOne({ _id: req.params?.id });
+            }
             if (!data) 
             {
                 return res.status(400).send({
                     code: 400,
                     status: false,
-                    message: `${cName} not found with the provided params id`
+                    message: errorMessage ? errorMessage : `User not found with the provided params id`
                 });
             }
             await closeDbConnection();
@@ -39,5 +48,7 @@ const isValidUserIdInTheParams = async (req, res, next) =>
         });
     }
 };
+
+
 
 export default isValidUserIdInTheParams;

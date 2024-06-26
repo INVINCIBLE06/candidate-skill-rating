@@ -1,12 +1,14 @@
 import { closeDbConnection, createDbConnection } from '../configs/db.config.js';
 import User from '../models/user.model.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 // Create User
 export const createUser = async (req, res, next) => {
     try {
-        const { name, role } = req.body;
+        const { name, email, role, password } = req.body;
         await createDbConnection()
-        const user = new User({ name, role });
+        const user = new User({ name, role, email, password });
         await user.save();
         await closeDbConnection();
         return res.status(201).json({
@@ -83,12 +85,14 @@ export const getParticularUser = async (req, res, next) => {
         await createDbConnection();
         const user = await User.findById(req.params.id);
         await closeDbConnection();
+
         if (!user) {
             return res.status(404).json({
                 status: false,
                 message: "User not found"
             });
         }
+
         return res.status(200).json({
             status: true,
             message: "User fetched successfully",
@@ -101,3 +105,43 @@ export const getParticularUser = async (req, res, next) => {
         });
     }
 };
+
+// Sign-in function
+export const signIn = async (req, res, next) => {
+    const { email, password } = req.body;
+    try 
+    {
+        await createDbConnection();
+        // Find user by email
+        const user = await User.findOne({ email }).select('+password');
+        if (!user) {
+            return res.status(401).json({
+                status: false,
+                message: 'Authentication failed. User not found.'
+            });
+        }
+
+        // Check password
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                status: false,
+                message: 'Authentication failed. Incorrect password.'
+            });
+        }
+
+        const token = jwt.sign({ id: user._id, role: user.role }, process.env.SECRET_KEY, { expiresIn: process.env.TOKEN_EXPIRE_TIME });
+        await closeDbConnection();
+        return res.status(200).json({
+            status: true,
+            message: 'Authentication successful.',
+            token
+        });
+    } catch (err) {
+        return res.status(500).json({
+            status: false,
+            message: 'Internal server error.',
+        });
+    }
+}

@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const QuestionSchema = new mongoose.Schema(
     {
@@ -26,7 +26,13 @@ const QuestionSchema = new mongoose.Schema(
         { 
             type: Number,
             default: 0
-        }
+        },
+        candidate: 
+        { 
+            type: Schema.Types.ObjectId, 
+            ref: 'User', 
+            required: true 
+        } 
     },
     {
         timestamps: true
